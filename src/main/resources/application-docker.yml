@@ -1,0 +1,9 @@
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://postgres-container:5432/my_db
+    username: my_user
+    password: my_password
+  data:
+    redis:
+      host: redis-container
+      port: 6379
