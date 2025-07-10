@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: spring-webflux-java
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:/schema.sql
 
 logging:
   level:

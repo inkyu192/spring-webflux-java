@@ -2,7 +2,7 @@ package spring.webflux.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -13,14 +13,16 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
+import spring.webflux.infrastructure.common.ResponseWriter;
 import spring.webflux.infrastructure.properties.CorsProperties;
 import spring.webflux.infrastructure.security.JwtAuthenticationFilter;
+import spring.webflux.infrastructure.security.JwtProvider;
 import spring.webflux.presentation.exception.handler.AccessDeniedExceptionHandler;
 import spring.webflux.presentation.exception.handler.AuthenticationExceptionHandler;
 import spring.webflux.presentation.exception.handler.JwtExceptionHandler;
 
 @EnableWebFluxSecurity
-@EnableMethodSecurity
+@EnableReactiveMethodSecurity
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfig {
 
@@ -30,8 +32,8 @@ public class SecurityConfig {
 		CorsProperties corsProperties,
 		AuthenticationExceptionHandler authenticationExceptionHandler,
 		AccessDeniedExceptionHandler accessDeniedExceptionHandler,
-		JwtAuthenticationFilter jwtAuthenticationFilter,
-		JwtExceptionHandler jwtExceptionHandler
+		JwtProvider jwtProvider,
+		ResponseWriter responseWriter
 	) {
 		return serverHttpSecurity
 			.csrf(ServerHttpSecurity.CsrfSpec::disable)
@@ -43,8 +45,8 @@ public class SecurityConfig {
 				.accessDeniedHandler(accessDeniedExceptionHandler)
 			)
 			.cors(corsSpec -> corsSpec.configurationSource(createCorsConfig(corsProperties)))
-			.addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
-			.addFilterAt(jwtExceptionHandler, SecurityWebFiltersOrder.FIRST)
+			.addFilterAt(new JwtAuthenticationFilter(jwtProvider), SecurityWebFiltersOrder.AUTHENTICATION)
+			.addFilterAt(new JwtExceptionHandler(responseWriter), SecurityWebFiltersOrder.FIRST)
 			.build();
 	}
 

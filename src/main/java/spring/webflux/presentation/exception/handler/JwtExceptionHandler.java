@@ -2,7 +2,6 @@ package spring.webflux.presentation.exception.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -15,7 +14,6 @@ import spring.webflux.infrastructure.common.ResponseWriter;
 import spring.webflux.infrastructure.common.UriFactory;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class JwtExceptionHandler implements WebFilter {
 
@@ -23,6 +21,8 @@ public class JwtExceptionHandler implements WebFilter {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+		log.info("JwtExceptionHandler: {}", Thread.currentThread().getName());
+
 		return chain.filter(exchange)
 			.onErrorResume(JwtException.class, ex ->
 				handleException(exchange, HttpStatus.UNAUTHORIZED, ex.getMessage())
