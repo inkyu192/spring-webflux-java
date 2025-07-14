@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Spring REST Docs ###
+/src/main/resources/static/docs/
+
+### SDKMAN ###
+.sdkmanrc
